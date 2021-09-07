@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双向数据绑定原理</title>
+    <style>
+        body{
+            height: 2000px;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="text" id="txtName">
+    <span id="nameTxt"></span>
+    <script>
+        var obj = {};
+        var val = "张三";
+        Object.defineProperty(obj, 'val', {
+            get: function () {
+                return val;
+            },
+            set: function (newVal) {
+                val = newVal;
+                document.getElementById('txtName').value = val;
+                document.getElementById('nameTxt').innerHTML = val;
+            }
+        })
+        document.addEventListener('keyup', function (e) {
+            obj.val = e.target.value;
+        })
+        document.getElementById('txtName').value = val;
+        document.getElementById('nameTxt').innerHTML = val;
+        /***********防抖函数开始***********/ //短时间内大量触发同一事件，就只执行一次 让某个时间期限（如上面的1000毫秒）内，事件处理函数只执行一次。
+        function debounce(fn, delay) {
+            let timer = null;
+            return function () {
+                if (timer) {
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(fn, delay)
+            }
+        }
+        // 然后是旧代码
+        function showTop() {
+            var scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+            console.log('滚动条位置：' + scrollTop);
+        }
+        //window.onscroll = debounce(showTop,200);
+        /***********防抖函数完结************/
+        /***********节流函数开始**************/
+        function throttle(fn,delay){
+            let valid = true;
+            return function(){
+                if(!valid){
+                    return false
+                }
+                valid = false
+                setTimeout(()=>{
+                    fn()
+                    valid = true
+                },delay)
+            }
+        }
+        window.onscroll = throttle(showTop,200);
+    </script>
+</body>
+
+</html>
